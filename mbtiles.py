@@ -15,6 +15,29 @@ class MbtileSet:
         if self.origin not in ['bottom','top']:
             raise Exception("origin must be either `bottom` or `top`")
 
+    def get_metadata(self):
+        metadata = {}
+
+        c = self.conn.cursor()
+        c.execute('select name, value from metadata')
+        for row in c.fetchall():
+            name = row[0]
+            value = row[1]
+
+            if name in ('minzoom', 'maxzoom'):
+                value = int(value)
+            elif name == 'bounds':
+                value = [float(v) for v in value.split(',')]
+            elif name == 'center':
+                # 1st value is long, 2nd is lat (both floats in WGS:84 values)
+                value = [float(v) for v in value.split(',')]
+                value[-1] = int(value[-1])  # 3rd is zoom and an integer
+            elif name == 'json':
+                value = json.loads(value)
+
+            metadata[name] = value
+
+        return metadata
 
     def write_all(self):
         if not self.outdir:
