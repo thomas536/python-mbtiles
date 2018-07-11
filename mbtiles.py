@@ -80,9 +80,9 @@ class Mbtile:
 
     def get_png(self):
         c = self.conn.cursor()
-        c.execute('''select tile_data from tiles 
-                      where zoom_level = %s 
-                      and tile_column = %s 
+        c.execute('''select tile_data from tiles
+                      where zoom_level = %s
+                      and tile_column = %s
                       and tile_row = %s''' % (self.zoom,self.col,self.row))
         row = c.fetchone()
         if not row:
@@ -93,9 +93,9 @@ class Mbtile:
     def get_json(self):
         c = self.conn.cursor()
         c2 = self.conn.cursor()
-        c.execute('''select grid from grids 
-                     where zoom_level = %s 
-                     and tile_column = %s 
+        c.execute('''select grid from grids
+                     where zoom_level = %s
+                     and tile_column = %s
                      and tile_row = %s''' % (self.zoom,self.col,self.row))
         row = c.fetchone()
         if not row:
@@ -117,16 +117,16 @@ class Mbtile:
         ''' % (self.zoom, self.col, self.row)
         keys = []
         for keyrow in c2.execute(kq):
-            keyname, keydata = keyrow  
-            keys.append((keyname, eval(keydata))) 
+            keyname, keydata = keyrow
+            keys.append((keyname, eval(keydata)))
         datadict = dict(keys)
         tgd[u'data'] = datadict
 
         return json.dumps(tgd)
 
     def write_png(self, outdir):
-        z, x, y = [str(i) for i in [self.zoom, self.col, self.output_row]] 
-        pngdir = os.path.join(outdir, z, x) 
+        z, x, y = [str(i) for i in [self.zoom, self.col, self.output_row]]
+        pngdir = os.path.join(outdir, z, x)
         try:
             os.makedirs(pngdir)
         except OSError as e:
@@ -141,8 +141,8 @@ class Mbtile:
             shutil.copyfile(self.blank_png_path, path)
 
     def write_json(self, outdir):
-        z, x, y = [str(i) for i in [self.zoom, self.col, self.output_row]] 
-        jsondir = os.path.join(outdir, z, x) 
+        z, x, y = [str(i) for i in [self.zoom, self.col, self.output_row]]
+        jsondir = os.path.join(outdir, z, x)
         try:
             os.makedirs(jsondir)
         except OSError:
